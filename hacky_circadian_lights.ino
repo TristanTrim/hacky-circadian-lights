@@ -7,8 +7,8 @@ int green_pin = 9;
 int blue_pin = 10;
 int white_pin = 12;
 
-int current_hour = 0;
-int current_min = 7;
+int current_hour = 18;
+int current_min = 22;
 
 // { hour, minute, red, green, blue, white }
 int schedule[][6] =
@@ -73,7 +73,7 @@ void setup() {
 
 
 void set_lights(int h,int m) {
-  int i = schedule_len;
+  int i = schedule_len-1;
   for (i; i>=0; i--)
   {
     if (schedule[i][0] <= h)
