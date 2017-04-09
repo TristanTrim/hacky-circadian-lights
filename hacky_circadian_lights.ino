@@ -7,16 +7,18 @@ int green_pin = 9;
 int blue_pin = 10;
 int white_pin = 12;
 
-int current_hour = 18;
-int current_min = 22;
+int current_hour = 1;
+int current_min = 40;
+
+int wakeup_hour = 12;
 
 // { hour, minute, red, green, blue, white }
 int schedule[][6] =
 {
 {0,0, 0,0,0,0},
-{3,0, 4,0,4,0},
-{4,0, 8,0,8,1},
-{5,0, 8,0,16,2},
+{5,0, 4,0,4,0},
+{5,30, 8,0,8,1},
+{5,30, 8,0,16,2},
 {6,0, 255,255,255,255},
 {9,0, 255,230,240,255},
 {12,0, 255,220,230,255},
@@ -55,6 +57,8 @@ size_t schedule_len = sizeof schedule / sizeof schedule[0];
 
 // the setup function runs once when you press reset or power the board
 void setup() {
+  // adjust for when to wake up... Note this is hacky
+  current_hour = (current_hour + 6 - wakeup_hour + 24 ) % 24;
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(red_pin, OUTPUT);
   pinMode(green_pin, OUTPUT);
