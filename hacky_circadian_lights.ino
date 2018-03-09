@@ -9,8 +9,8 @@ I think this should be for a teensy 2.0 by the way.
 */
 
 
-int current_hour = 13;
-int current_min = 51;
+int current_hour = 14;
+int current_min = 27;
 
 // if 6, there is no offset. 6 is the correct hour to wake up.
 int wakeup_hour = 6;
@@ -39,32 +39,13 @@ int schedule[][6] =
 {5,45, 8,0,16,2},
 {6,0, 255,255,255,255},
 {7,0, 255,255,255,255},
-{7,30, 0,0,0,0},
-{15,0, 0,0,0,0},
+{7,30, 1,0,0,1},
+{15,0, 1,0,0,1},
 {15,30, 255,150,180,200},
 {18,0, 255,100,130,100},
 {21,0, 255,0,0,1},
 {22,0, 0,0,0,0},
 };
-
-//{3,0, 4,0,4,0},
-//{4,0, 8,0,8,1},
-//{5,0, 8,0,16,2},
-//{6,0, 255,255,255,255},
-//{9,0, 255,230,240,255},
-//{12,0, 255,220,230,255},
-//{15,0, 255,150,180,200},
-//{18,0, 255,100,130,100},
-//{21,0, 255,32,8,64},
-//{21,15, 200,16,4,32},
-//{21,30, 180,4,2,8},
-//{21,45, 150,2,1,4},
-//{21,50, 128,1,0,2},
-//{21,55, 64,0,0,1},
-//{21,57, 32,0,0,1},
-//{21,58, 16,0,0,0},
-//{21,59, 8,0,0,0},
-//{22,0, 0,0,0,0},
 size_t schedule_len = sizeof schedule / sizeof schedule[0];
 
 // the setup function runs once when you press reset or power the board
@@ -77,7 +58,7 @@ void setup() {
   pinMode(blue_pin, OUTPUT);
   pinMode(white_pin, OUTPUT);
   pinMode(11,OUTPUT);
-  for (int i=0;i<2;i++){
+  for (int i=0;i<3;i++){
     digitalWrite(11,LOW);
     delay(500);
     digitalWrite(11,HIGH);
@@ -93,22 +74,46 @@ void delta_light_selector(int h, int m, int li, int ni){
   float last = schedule[li][0]*60 + schedule[li][1];
   float next = schedule[ni][0]*60 + schedule[ni][1];
   // figure out ratio from last schedule time to next schedule time
-  float time_ratio = ((now - last)/(next - last));
+  float time_ratio = (now - last)/(next - last);
+    
+    float colour_delta;
+    int light_level;
   
-  for (int i=0; i>lights_len; i++){
     // find change from last light level to next light level
-    float colour_delta = schedule[ni][i+2] - schedule[li][i+2];
+    colour_delta = schedule[ni][red_pin] - schedule[li][red_pin];
     // add change in light (based on time_ratio
-    int light_level = colour_delta * time_ratio + schedule[li][i+2];
+    light_level = colour_delta * time_ratio + schedule[li][red_pin];
     // set the ligth pwm
-    analogWrite(lights[i],  light_level);
-  }
+    analogWrite(red_pin,  light_level);
+
+    // find change from last light level to next light level
+    colour_delta = schedule[ni][green_pin] - schedule[li][green_pin];
+    // add change in light (based on time_ratio
+    light_level = colour_delta * time_ratio + schedule[li][green_pin];
+    // set the ligth pwm
+    analogWrite(green_pin,  light_level);
+
+    // find change from last light level to next light level
+    colour_delta = schedule[ni][blue_pin] - schedule[li][blue_pin];
+    // add change in light (based on time_ratio
+    light_level = colour_delta * time_ratio + schedule[li][blue_pin];
+    // set the ligth pwm
+    analogWrite(blue_pin,  light_level);
+
+    // find change from last light level to next light level
+    colour_delta = schedule[ni][white_pin] - schedule[li][white_pin];
+    // add change in light (based on time_ratio
+    light_level = colour_delta * time_ratio + schedule[li][white_pin];
+    // set the ligth pwm
+    analogWrite(white_pin,  light_level);
 }
 
 void set_lights(int h,int m) {
   // We check the time intervals in reverse order for reasons!
   int next = 0;
   int prev = schedule_len-1;
+  // iterate, setting back the time interval until
+  // the current time falls within the time interval
   while (prev >= 0 )
   {
     if (schedule[prev][0] <= h)
