@@ -4,12 +4,15 @@ Fug
 I don't know why the functions are broken up the way they are.
 I didn't think about it that much.
 Sorry.
+
+I think this should be for a teensy 2.0 by the way.
 */
 
 
-int current_hour = 23;
-int current_min = 0;
+int current_hour = 13;
+int current_min = 51;
 
+// if 6, there is no offset. 6 is the correct hour to wake up.
 int wakeup_hour = 6;
 
 
@@ -74,7 +77,7 @@ void setup() {
   pinMode(blue_pin, OUTPUT);
   pinMode(white_pin, OUTPUT);
   pinMode(11,OUTPUT);
-  for (int i=0;i<5;i++){
+  for (int i=0;i<2;i++){
     digitalWrite(11,LOW);
     delay(500);
     digitalWrite(11,HIGH);
@@ -86,15 +89,15 @@ void setup() {
 
 void delta_light_selector(int h, int m, int li, int ni){
   // convert time to total minutes
-  int now = h*60 + m;
-  int last = schedule[li][0]*60 + schedule[li][1];
-  int next = schedule[ni][0]*60 + schedule[ni][1];
+  float now = h*60 + m;
+  float last = schedule[li][0]*60 + schedule[li][1];
+  float next = schedule[ni][0]*60 + schedule[ni][1];
   // figure out ratio from last schedule time to next schedule time
   float time_ratio = ((now - last)/(next - last));
   
   for (int i=0; i>lights_len; i++){
     // find change from last light level to next light level
-    int colour_delta = schedule[ni][i+2] - schedule[li][i+2];
+    float colour_delta = schedule[ni][i+2] - schedule[li][i+2];
     // add change in light (based on time_ratio
     int light_level = colour_delta * time_ratio + schedule[li][i+2];
     // set the ligth pwm
@@ -112,13 +115,15 @@ void set_lights(int h,int m) {
     {
       if (schedule[prev][1] <= m)
       {
-        delta_light_selector(h,m,prev,next);
+        break;
       }
     }
     // It wasn't that time interval!!! Check the previous!!!
     next = prev;
     prev--;
   }
+  // Selected the interval, lets call the light level selector!
+  delta_light_selector(h,m,prev,next);
 
 }
 
