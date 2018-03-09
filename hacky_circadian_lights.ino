@@ -9,7 +9,7 @@ I think this should be for a teensy 2.0 by the way.
 */
 
 
-int current_hour = 14;
+int current_hour = 5;
 int current_min = 27;
 
 // if 6, there is no offset. 6 is the correct hour to wake up.
@@ -45,6 +45,7 @@ int schedule[][6] =
 {18,0, 255,100,130,100},
 {21,0, 255,0,0,1},
 {22,0, 0,0,0,0},
+{24,0, 0,0,0,0},
 };
 size_t schedule_len = sizeof schedule / sizeof schedule[0];
 
@@ -80,30 +81,30 @@ void delta_light_selector(int h, int m, int li, int ni){
     int light_level;
   
     // find change from last light level to next light level
-    colour_delta = schedule[ni][red_pin] - schedule[li][red_pin];
+    colour_delta = schedule[ni][2] - schedule[li][2];
     // add change in light (based on time_ratio
-    light_level = colour_delta * time_ratio + schedule[li][red_pin];
+    light_level = colour_delta * time_ratio + schedule[li][2];
     // set the ligth pwm
     analogWrite(red_pin,  light_level);
 
     // find change from last light level to next light level
-    colour_delta = schedule[ni][green_pin] - schedule[li][green_pin];
+    colour_delta = schedule[ni][3] - schedule[li][3];
     // add change in light (based on time_ratio
-    light_level = colour_delta * time_ratio + schedule[li][green_pin];
+    light_level = colour_delta * time_ratio + schedule[li][3];
     // set the ligth pwm
     analogWrite(green_pin,  light_level);
 
     // find change from last light level to next light level
-    colour_delta = schedule[ni][blue_pin] - schedule[li][blue_pin];
+    colour_delta = schedule[ni][4] - schedule[li][4];
     // add change in light (based on time_ratio
-    light_level = colour_delta * time_ratio + schedule[li][blue_pin];
+    light_level = colour_delta * time_ratio + schedule[li][4];
     // set the ligth pwm
     analogWrite(blue_pin,  light_level);
 
     // find change from last light level to next light level
-    colour_delta = schedule[ni][white_pin] - schedule[li][white_pin];
+    colour_delta = schedule[ni][5] - schedule[li][5];
     // add change in light (based on time_ratio
-    light_level = colour_delta * time_ratio + schedule[li][white_pin];
+    light_level = colour_delta * time_ratio + schedule[li][5];
     // set the ligth pwm
     analogWrite(white_pin,  light_level);
 }
