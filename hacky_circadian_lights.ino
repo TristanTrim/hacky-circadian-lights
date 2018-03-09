@@ -1,16 +1,32 @@
 /*
 Fug
+
+I don't know why the functions are broken up the way they are.
+I didn't think about it that much.
+Sorry.
 */
+
+
+int current_hour = 23;
+int current_min = 0;
+
+int wakeup_hour = 6;
+
 
 int red_pin = 4;
 int green_pin = 9;
 int blue_pin = 10;
 int white_pin = 12;
 
-int current_hour = 1;
-int current_min = 40;
+int lights[4] =
+{
+red_pin,
+green_pin,
+blue_pin,
+white_pin
+};
+size_t lights_len = sizeof lights / sizeof lights[0];
 
-int wakeup_hour = 12;
 
 // { hour, minute, red, green, blue, white }
 int schedule[][6] =
@@ -25,16 +41,17 @@ int schedule[][6] =
 {15,0, 255,150,180,200},
 {18,0, 255,100,130,100},
 {21,0, 255,32,64,64},
-{21,15, 128,16,32,32},
-{21,30, 64,4,8,8},
-{21,45, 32,2,4,4},
-{21,50, 16,1,2,2},
-{21,55, 8,0,1,1},
-{21,57, 4,0,0,1},
-{21,58, 2,0,0,0},
-{21,59, 1,0,0,0},
-{22,0, 0,0,0,0},
+{21,15, 255,16,32,32},
+{21,30, 255,4,8,8},
+{21,45, 255,2,4,4},
+{21,50, 255,1,2,2},
+{21,55, 255,0,1,1},
+{21,57, 255,0,0,1},
+{23,30, 128,0,0,0},
+{23,45, 64,0,0,0},
+{23,55, 16,0,0,0},
 };
+
 //{3,0, 4,0,4,0},
 //{4,0, 8,0,8,1},
 //{5,0, 8,0,16,2},
@@ -75,23 +92,42 @@ void setup() {
     digitalWrite(11,LOW);
 }
 
+void delta_light_selector(int h, int m, int li, int ni){
+  // convert time to total minutes
+  int now = h*60 + m;
+  int last = schedule[li][0]*60 + schedule[li][1];
+  int next = schedule[ni][0]*60 + schedule[ni][1];
+  // figure out ratio from last schedule time to next schedule time
+  float time_ratio = ((now - last)/(next - last));
+  
+  for (int i=0; i>lights_len; i++){
+    // find change from last light level to next light level
+    int colour_delta = schedule[ni][i+2] - schedule[li][i+2];
+    // add change in light (based on time_ratio
+    int light_level = colour_delta * time_ratio + schedule[li][i+2];
+    // set the ligth pwm
+    analogWrite(lights[i],  light_level);
+  }
+}
 
 void set_lights(int h,int m) {
-  int i = schedule_len-1;
-  for (i; i>=0; i--)
+  // We check the time intervals in reverse order for reasons!
+  int next = 0;
+  int prev = schedule_len-1;
+  while (prev >= 0 )
   {
-    if (schedule[i][0] <= h)
+    if (schedule[prev][0] <= h)
     {
-      if (schedule[i][1] <= m)
+      if (schedule[prev][1] <= m)
       {
-        break;
+        delta_light_selector(h,m,prev,next);
       }
     }
+    // It wasn't that time interval!!! Check the previous!!!
+    next = prev;
+    prev--;
   }
-  analogWrite(red_pin,  schedule[i][2]);
-  analogWrite(green_pin, schedule[i][3]);
-  analogWrite(blue_pin, schedule[i][4]);
-  analogWrite(white_pin, schedule[i][5]);
+
 }
 
 // the loop function runs over and over again forever
