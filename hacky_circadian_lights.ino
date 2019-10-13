@@ -9,8 +9,8 @@ I think this should be for a teensy 2.0 by the way.
 */
 
 
-int current_hour = 5;
-int current_min = 27;
+int current_hour = 21;
+int current_min = 0;
 
 // if 6, there is no offset. 6 is the correct hour to wake up.
 int wakeup_hour = 6;
@@ -39,8 +39,10 @@ int schedule[][6] =
 {5,45, 8,0,16,2},
 {6,0, 255,255,255,255},
 {7,0, 255,255,255,255},
-{7,30, 1,0,0,1},
-{15,0, 1,0,0,1},
+//{7,30, 1,0,0,1},
+//{15,0, 1,0,0,1},
+{7,30, 0,255,255,255},
+{15,0, 0,255,255,255},
 {15,30, 255,150,180,200},
 {18,0, 255,100,130,100},
 {21,0, 255,0,0,1},
