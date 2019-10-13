@@ -1,0 +1,7 @@
+
+ALWAYS USE THE COMMAND LINE UPLOAD. The builtin arduino upoader didn't work. It's probably some stupid setting I didn't set right, but the commandline works so whatever.
+
+So it seems when I call an index that is out of range, being the len of the array, it returns the len of the array...? but only for the first index, for the second it returns 0?
+I'm really confused by this, but I think it may explain the bug I'm getting. I'm not sure.
+
+
